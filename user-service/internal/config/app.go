@@ -5,6 +5,7 @@ import (
 	"user-service/internal/delivery/http/route"
 	"user-service/internal/model"
 	"user-service/internal/repository"
+	"user-service/internal/usecase"
 
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/go-playground/validator/v10"
@@ -19,7 +20,7 @@ type BootstrapConfig struct {
 	App       *fiber.App
 	Log       *logrus.Logger
 	Validate  *validator.Validate
-	Config    *viper.Viper
+	Viper     *viper.Viper
 	Producer  *kafka.Producer
 	JWTConfig *model.JWTConfig
 }
@@ -30,10 +31,9 @@ func Bootstrap(config *BootstrapConfig) {
 	userRepository := repository.NewUsersRepository(config.Log)
 
 	// setup use cases
-	userUseCase := usecase.NewUserUseCase(config.Log, userRepository, config.Validate)
-
+	userUseCase := usecase.NewUsersUsecase(config.DB, config.Log, config.Validate, config.Viper, userRepository)
 	// setup controllers
-	authController := http.NewAuthController(config.Log, userUseCase, config.JWTConfig)
+	authController := http.NewAuthController(config.Log, userUseCase)
 
 	routeConfig := route.RouteConfig{
 		App:            config.App,

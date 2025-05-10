@@ -21,7 +21,7 @@ func main() {
 		App:       app,
 		Log:       log,
 		Validate:  validate,
-		Config:    viperConfig,
+		Viper:     viperConfig,
 		Producer:  producer,
 		JWTConfig: jwtConfig,
 	})
@@ -29,7 +29,7 @@ func main() {
 	webPort := viperConfig.GetInt("WEB_PORT")
 	url := viperConfig.GetString("WEB_HOST")
 	log.Infof("Starting server at %s:%d", url, webPort)
-	err = app.Listen(fmt.Sprintf(":%d", webPort))
+	err := app.Listen(fmt.Sprintf(":%d", webPort))
 	if err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}

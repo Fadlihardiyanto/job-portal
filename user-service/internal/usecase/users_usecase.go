@@ -25,12 +25,13 @@ type UsersUsecase struct {
 	UsersRepository *repository.UsersRepository
 }
 
-func NewUsersUsecase(db *gorm.DB, log *logrus.Logger, validate *validator.Validate, viper *viper.Viper) *UsersUsecase {
+func NewUsersUsecase(db *gorm.DB, log *logrus.Logger, validate *validator.Validate, viper *viper.Viper, UsersRepository *repository.UsersRepository) *UsersUsecase {
 	return &UsersUsecase{
-		DB:       db,
-		Log:      log,
-		Validate: validate,
-		Viper:    viper,
+		DB:              db,
+		Log:             log,
+		Validate:        validate,
+		Viper:           viper,
+		UsersRepository: UsersRepository,
 	}
 }
 
