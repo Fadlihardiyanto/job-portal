@@ -5,6 +5,8 @@ CREATE TABLE IF NOT EXISTS users (
     first_name VARCHAR(255),
     last_name VARCHAR(255),
     email VARCHAR(255) UNIQUE NOT NULL,
+    email_token VARCHAR(255) UNIQUE,
+    email_verified_at TIMESTAMP,
     password VARCHAR(255) NOT NULL,
     is_active BOOLEAN DEFAULT TRUE,
     role user_role NOT NULL,

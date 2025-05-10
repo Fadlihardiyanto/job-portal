@@ -7,7 +7,7 @@ type UserJobs struct {
 	JobID     int    `gorm:"column:job_id"`
 	CreatedAt string `gorm:"column:created_at"`
 	UpdatedAt string `gorm:"column:updated_at"`
-	Users     Users  `gorm:"foreignKey:UserID;references:ID"`
+	Users     User   `gorm:"foreignKey:UserID;references:ID"`
 	Jobs      Jobs   `gorm:"foreignKey:JobID;references:ID"`
 	Resume    Resume `gorm:"foreignKey:ResumeID;references:ID"`
 }

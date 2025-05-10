@@ -7,5 +7,5 @@ type Resume struct {
 	UserID    int    `gorm:"column:user_id"`
 	CreatedAt string `gorm:"column:created_at"`
 	UpdatedAt string `gorm:"column:updated_at"`
-	Users     Users  `gorm:"foreignKey:UserID;references:ID"`
+	Users     User   `gorm:"foreignKey:UserID;references:ID"`
 }

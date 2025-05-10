@@ -7,29 +7,27 @@ import (
 )
 
 type RouteConfig struct {
-	App            *fiber.App
-	AuthMiddleware fiber.Handler
-	AuthController *http.AuthController
+	App              *fiber.App
+	AuthMiddleware   fiber.Handler
+	AuthController   *http.AuthController
+	UserController   *http.UserController
+	ResumeController *http.ResumeController
 }
 
-func (c *RouteConfig) Setup() {
-	group := c.App.Group("/api/v1")
+func (c *RouteConfig) SetupRoutes() {
+	api := c.App.Group("/api/v1")
 
-	// public route
-	c.SetupGuestRoute(group)
+	auth := api.Group("/auth")
+	auth.Post("/register", c.AuthController.Register)
+	auth.Post("/login", c.AuthController.Login)
+	auth.Get("/verify", c.AuthController.Verify)
 
-	// auth middleware
-	c.App.Use(c.AuthMiddleware)
+	users := api.Group("/users")
+	users.Get("/", c.UserController.GetAllUsers)
+	users.Get("/:id", c.UserController.GetUserByID)
+	users.Put("/:id", c.UserController.UpdateUser)
 
-	// auth route
-	c.SetupAuthRoute(group)
-}
-
-func (c *RouteConfig) SetupGuestRoute(group fiber.Router) {
-	// auth route
-	authGroup := group.Group("/auth")
-	authGroup.Post("/register", c.AuthController.Register)
-}
-
-func (c *RouteConfig) SetupAuthRoute(group fiber.Router) {
+	// Resume routes
+	resumes := api.Group("/resumes")
+	resumes.Post("/", c.ResumeController.CreateResume)
 }

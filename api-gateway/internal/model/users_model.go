@@ -22,6 +22,14 @@ type UserResponse struct {
 	UpdatedAt      time.Time `json:"updated_at,omitzero"`
 }
 
+type WrappedUserResponse struct {
+	Data UserResponse `json:"data"`
+}
+
+type WrappedUserList struct {
+	Data []UserResponse `json:"data"`
+}
+
 type VerifyUserRequest struct {
 	Token string `json:"token" validate:"required"`
 }
