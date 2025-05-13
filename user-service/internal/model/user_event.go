@@ -13,3 +13,7 @@ type UserEvent struct {
 func (u *UserEvent) GetId() int {
 	return u.ID
 }
+
+func (u *UserEvent) GetKey() string {
+	return u.Email
+}

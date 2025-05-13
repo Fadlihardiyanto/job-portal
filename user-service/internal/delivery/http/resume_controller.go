@@ -1,23 +1,29 @@
 package http
 
 import (
+	"time"
 	common "user-service/internal/common/error"
 	"user-service/internal/model"
 	"user-service/internal/usecase"
 
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 )
 
 type ResumeController struct {
 	Log           *logrus.Logger
 	ResumeUseCase *usecase.ResumeUseCase
+	UsersUseCase  *usecase.UsersUsecase
 }
 
-func NewResumeController(log *logrus.Logger, resumeUseCase *usecase.ResumeUseCase) *ResumeController {
+func NewResumeController(log *logrus.Logger, resumeUseCase *usecase.ResumeUseCase, usersUseCase *usecase.UsersUsecase) *ResumeController {
 	return &ResumeController{
 		Log:           log,
 		ResumeUseCase: resumeUseCase,
+		UsersUseCase:  usersUseCase,
 	}
 }
 
@@ -69,9 +75,36 @@ func (c *ResumeController) FindByID(ctx *fiber.Ctx) error {
 }
 
 func (c *ResumeController) CreateResume(ctx *fiber.Ctx) error {
-	request := new(model.RequestResume)
-	if err := ctx.BodyParser(request); err != nil {
-		c.Log.Warnf("Failed to parse request body : %+v", err)
+	userID := ctx.FormValue("user_id")
+	if userID == "" {
+		return common.HandleErrorResponse(ctx, fiber.NewError(fiber.StatusBadRequest, "user_id is required"))
+	}
+
+	fileHeader, err := ctx.FormFile("attachment")
+	if err != nil {
+		c.Log.Warnf("Failed to get file from form: %+v", err)
+		return common.HandleErrorResponse(ctx, err)
+	}
+
+	nameFile := fileHeader.Filename
+	timestamp := time.Now().Unix()
+	uniqueID := uuid.NewString()[:8]
+	storedFileName := fmt.Sprintf("%d_%s_%s", timestamp, uniqueID, nameFile)
+	savePath := "uploads/resumes/" + storedFileName
+	if err := ctx.SaveFile(fileHeader, savePath); err != nil {
+		c.Log.Warnf("Failed to save file: %+v", err)
+		return common.HandleErrorResponse(ctx, err)
+	}
+
+	request := &model.RequestResume{
+		Name:       nameFile,
+		Attachment: savePath,
+		UserID:     userID,
+	}
+
+	_, err = c.UsersUseCase.GetUserByID(ctx.UserContext(), request.UserID)
+	if err != nil {
+		c.Log.Warnf("Failed to find user by ID : %+v", err)
 		return common.HandleErrorResponse(ctx, err)
 	}
 

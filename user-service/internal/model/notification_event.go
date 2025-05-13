@@ -15,3 +15,7 @@ type NotificationEvent struct {
 func (n *NotificationEvent) GetId() int {
 	return n.ID
 }
+
+func (n *NotificationEvent) GetKey() string {
+	return n.Email
+}

@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"reflect"
+	"time"
 	common "user-service/internal/common/error"
 	commonUtil "user-service/internal/common/util"
 	"user-service/internal/gateway/messaging"
@@ -38,7 +39,6 @@ func NewResumeUseCase(db *gorm.DB, log *logrus.Logger, validate *validator.Valid
 }
 
 func (c *ResumeUseCase) CreateResume(ctx context.Context, request *model.RequestResume) (*model.ResponseResume, error) {
-	// Validasi request
 	err := c.Validate.Struct(request)
 	if err != nil {
 		c.Log.Warnf("Invalid request body: %+v", err)
@@ -46,26 +46,22 @@ func (c *ResumeUseCase) CreateResume(ctx context.Context, request *model.Request
 		return nil, fiber.NewError(fiber.StatusBadRequest, commonUtil.MapToJSON(validationErrors))
 	}
 
-	// Buat event
 	event := &model.ResumeEvent{
 		Name:       request.Name,
 		Attachment: request.Attachment,
 		UserID:     request.UserID,
+		Status:     "queued",
+		CreatedAt:  time.Now().Format(time.RFC3339),
+		UpdatedAt:  time.Now().Format(time.RFC3339),
 	}
 
-	// Kirim ke Kafka
 	err = c.ResumeProducer.Send(event)
 	if err != nil {
 		c.Log.Errorf("Failed to send resume event to Kafka: %v", err)
 		return nil, fiber.NewError(fiber.StatusInternalServerError, "Failed to queue resume for processing")
 	}
 
-	return &model.ResponseResume{
-		Name:       request.Name,
-		Attachment: request.Attachment,
-		UserID:     request.UserID,
-		Status:     "Queued",
-	}, nil
+	return converter.EventToResponse(event), nil
 }
 
 func (c *ResumeUseCase) GetAllResume(ctx context.Context) ([]model.ResponseResume, error) {

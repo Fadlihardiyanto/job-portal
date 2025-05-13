@@ -8,7 +8,6 @@ type ResponseResume struct {
 	Status     string `json:"status"`
 	CreatedAt  string `json:"created_at"`
 	UpdatedAt  string `json:"updated_at"`
-	Users      User   `json:"users"`
 }
 
 type User struct {

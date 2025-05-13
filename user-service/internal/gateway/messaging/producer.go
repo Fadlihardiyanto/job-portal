@@ -2,7 +2,6 @@ package messaging
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"user-service/internal/model"
 
@@ -33,7 +32,7 @@ func (p *Producer[T]) Send(event T) error {
 			Partition: int32(kafka.PartitionAny),
 		},
 		Value: value,
-		Key:   []byte(fmt.Sprintf("%d", event.GetId())),
+		Key:   []byte(event.GetKey()),
 	}
 
 	deliveryChan := make(chan kafka.Event)

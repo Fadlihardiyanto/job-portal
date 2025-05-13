@@ -30,24 +30,29 @@ func Bootstrap(config *BootstrapConfig) {
 
 	// setup repositories
 	userRepository := repository.NewUsersRepository(config.Log)
+	resumeRepository := repository.NewResumeRepository(config.Log)
 
 	// setup producers
 	userProducer := messaging.NewUserProducer(config.Producer, config.Log)
 	notifcationProducer := messaging.NewNotificationProducer(config.Producer, config.Log)
+	resumeProducer := messaging.NewResumeProducer(config.Producer, config.Log)
 
 	// setup use cases
 	tokenUseCase := usecase.NewTokenUseCase(config.JWTConfig, config.Log)
 	userUseCase := usecase.NewUsersUsecase(config.DB, config.Log, config.Validate, config.Viper, tokenUseCase, userRepository, userProducer, notifcationProducer)
+	resumeUseCase := usecase.NewResumeUseCase(config.DB, config.Log, config.Validate, config.Viper, resumeRepository, resumeProducer)
 
 	// setup controllers
 	authController := http.NewAuthController(config.Log, userUseCase)
 	userController := http.NewUserController(config.Log, userUseCase)
+	resumeController := http.NewResumeController(config.Log, resumeUseCase, userUseCase)
 
 	routeConfig := route.RouteConfig{
 
-		App:            config.App,
-		AuthController: authController,
-		UserController: userController,
+		App:              config.App,
+		AuthController:   authController,
+		UserController:   userController,
+		ResumeController: resumeController,
 	}
 
 	routeConfig.SetupRoutes()

@@ -10,6 +10,10 @@ type ResumeEvent struct {
 	UpdatedAt  string `json:"updated_at,omitempty"`
 }
 
+func (r *ResumeEvent) GetKey() string {
+	return r.UserID
+}
+
 func (r *ResumeEvent) GetId() int {
 	return r.ID
 }
