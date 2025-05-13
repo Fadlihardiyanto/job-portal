@@ -8,9 +8,10 @@ import (
 )
 
 type RouteConfig struct {
-	App            *fiber.App
-	AuthController *http.AuthController
-	UserController *http.UsersController
+	App              *fiber.App
+	AuthController   *http.AuthController
+	UserController   *http.UsersController
+	ResumeController *http.ResumeController
 
 	AuthMiddleware fiber.Handler
 }
@@ -42,4 +43,9 @@ func (c *RouteConfig) SetupAuthRoute(group fiber.Router) {
 	users.Get("/:id", middleware.RoleMiddleware("admin"), c.UserController.GetUserByID)
 	users.Put("/", c.UserController.UpdateUser)
 
+	resume := group.Group("/resumes")
+	resume.Get("/", c.ResumeController.GetAllResume)
+	resume.Get("/:id", c.ResumeController.FindResumeByID)
+	resume.Get("/user/:id", c.ResumeController.GetResumeByUserID)
+	resume.Post("/", c.ResumeController.CreateResume)
 }
