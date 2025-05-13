@@ -22,3 +22,12 @@ func GenerateToken(length int) (string, error) {
 	}
 	return hex.EncodeToString(bytes), nil
 }
+
+func StringToInt(s string) (int, error) {
+	var i int
+	err := json.Unmarshal([]byte(s), &i)
+	if err != nil {
+		return 0, err
+	}
+	return i, nil
+}

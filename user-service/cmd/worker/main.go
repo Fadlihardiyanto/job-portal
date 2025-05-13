@@ -23,6 +23,7 @@ func main() {
 
 	go RunUserConsumer(logger, viperConfig, ctx)
 	go RunUserNotificationConsumer(logger, viperConfig, ctx)
+	go RunResumeConsumer(logger, viperConfig, ctx)
 
 	terminateSignals := make(chan os.Signal, 1)
 	signal.Notify(terminateSignals, syscall.SIGINT, syscall.SIGTERM)
@@ -61,4 +62,11 @@ func RunUserNotificationConsumer(logger *logrus.Logger, viperConfig *viper.Viper
 	userConsumer := config.NewKafkaConsumer(viperConfig, logger)
 	userNotificationHandler := messaging.NewUserNotificationConsumer(logger, emailSender)
 	messaging.ConsumeTopic(ctx, userConsumer, "notification-event", logger, userNotificationHandler.Consume)
+}
+
+func RunResumeConsumer(logger *logrus.Logger, viperConfig *viper.Viper, ctx context.Context) {
+	logger.Info("setup resume consumer")
+	resumeConsumer := config.NewKafkaConsumer(viperConfig, logger)
+	resumeHandler := messaging.NewResumeConsumer(logger)
+	messaging.ConsumeTopic(ctx, resumeConsumer, "resumes", logger, resumeHandler.Consume)
 }

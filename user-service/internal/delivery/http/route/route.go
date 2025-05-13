@@ -30,4 +30,7 @@ func (c *RouteConfig) SetupRoutes() {
 	// Resume routes
 	resumes := api.Group("/resumes")
 	resumes.Post("/", c.ResumeController.CreateResume)
+	resumes.Get("/", c.ResumeController.GetAllResumes)
+	resumes.Get("/:user_id", c.ResumeController.GetByUserID)
+	resumes.Get("/:id", c.ResumeController.FindByID)
 }

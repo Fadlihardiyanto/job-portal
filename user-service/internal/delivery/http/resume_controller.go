@@ -21,6 +21,53 @@ func NewResumeController(log *logrus.Logger, resumeUseCase *usecase.ResumeUseCas
 	}
 }
 
+func (c *ResumeController) GetAllResumes(ctx *fiber.Ctx) error {
+	resumes, err := c.ResumeUseCase.GetAllResume(ctx.UserContext())
+	if err != nil {
+		c.Log.Warnf("Failed to get all resumes : %+v", err)
+		return common.HandleErrorResponse(ctx, err)
+	}
+
+	return ctx.JSON(model.WebResponse[[]model.ResponseResume]{
+		Message: "Successfully retrieved all resumes",
+		Data:    resumes,
+	})
+}
+
+func (c *ResumeController) GetByUserID(ctx *fiber.Ctx) error {
+	request := &model.RequestFindResumeByUser{
+		UserID: ctx.Params("user_id"),
+	}
+
+	resumes, err := c.ResumeUseCase.GetByUserID(ctx.UserContext(), request)
+	if err != nil {
+		c.Log.Warnf("Failed to get resumes by user ID : %+v", err)
+		return common.HandleErrorResponse(ctx, err)
+	}
+
+	return ctx.JSON(model.WebResponse[[]model.ResponseResume]{
+		Message: "Successfully retrieved resumes",
+		Data:    resumes,
+	})
+}
+
+func (c *ResumeController) FindByID(ctx *fiber.Ctx) error {
+	request := &model.RequestFindResumeByID{
+		ID: ctx.Params("id"),
+	}
+
+	resume, err := c.ResumeUseCase.FindByID(ctx.UserContext(), request)
+	if err != nil {
+		c.Log.Warnf("Failed to find resume by ID : %+v", err)
+		return common.HandleErrorResponse(ctx, err)
+	}
+
+	return ctx.JSON(model.WebResponse[model.ResponseResume]{
+		Message: "Successfully retrieved resume",
+		Data:    *resume,
+	})
+}
+
 func (c *ResumeController) CreateResume(ctx *fiber.Ctx) error {
 	request := new(model.RequestResume)
 	if err := ctx.BodyParser(request); err != nil {
