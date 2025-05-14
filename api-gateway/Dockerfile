@@ -1,6 +1,6 @@
-FROM golang:1.23-alpine AS builder
+FROM golang:1.23-bullseye AS builder
 
-RUN apk add --no-cache git
+RUN apt-get update && apt-get install -y git ca-certificates
 
 WORKDIR /app
 
@@ -12,7 +12,9 @@ COPY . .
 WORKDIR /app/cmd/web
 RUN go build -o /app/bin/web
 
-FROM alpine:latest
+FROM debian:bullseye-slim
+
+RUN apt-get update && apt-get install -y ca-certificates
 
 WORKDIR /app
 

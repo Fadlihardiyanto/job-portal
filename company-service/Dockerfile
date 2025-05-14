@@ -1,8 +1,14 @@
+FROM golang:1.23-bullseye AS builder
 
-FROM golang:1.23-alpine AS builder
 
-
-RUN apk add --no-cache git librdkafka-dev gcc musl-dev
+RUN apt-get update && apt-get install -y \
+    gcc \
+    librdkafka-dev \
+    git \
+    pkg-config \
+    libc6-dev \
+    make \
+    ca-certificates
 
 WORKDIR /app
 
@@ -11,13 +17,17 @@ RUN go mod download
 
 COPY . .
 
+# Build binary
 WORKDIR /app/cmd/web
 RUN go build -o /app/bin/web
 
 WORKDIR /app/cmd/worker
 RUN go build -o /app/bin/worker
 
-FROM alpine:latest
+# Runtime stage
+FROM debian:bullseye-slim
+
+RUN apt-get update && apt-get install -y librdkafka1 ca-certificates
 
 WORKDIR /app
 
