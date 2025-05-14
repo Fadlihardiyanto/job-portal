@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"log"
 	"time"
 
 	"user-service/internal/model"
@@ -46,35 +45,4 @@ func (c *TokenUseCase) GenerateToken(id int, role string) (string, time.Time, er
 	expiresAccessToken := claims.ExpiresAt.Time
 
 	return accessTokenString, expiresAccessToken, nil
-}
-
-func (c *TokenUseCase) ValidateToken(tokenString string) (*model.Auth, error) {
-	var auth *model.Auth
-
-	log.Println("tokenString: ", tokenString)
-
-	token, err := jwt.ParseWithClaims(tokenString, &model.UserClaims{}, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, jwt.ErrSignatureInvalid
-		}
-
-		return []byte(c.JwtConfig.SecretKey), nil
-	})
-	if err != nil {
-		c.Log.Warnf("Failed to validate token : %+v", err)
-		return nil, err
-	}
-
-	claims, ok := token.Claims.(*model.UserClaims)
-	if !ok || !token.Valid {
-		c.Log.Warnf("Failed to validate token : %+v", jwt.ErrInvalidKey)
-		return nil, jwt.ErrInvalidKey
-	}
-
-	auth = &model.Auth{
-		ID:   claims.ID,
-		Role: claims.Role,
-	}
-
-	return auth, nil
 }

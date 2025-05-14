@@ -1,6 +1,4 @@
-
 FROM golang:1.23-alpine AS builder
-
 
 RUN apk add --no-cache git
 
@@ -14,14 +12,10 @@ COPY . .
 WORKDIR /app/cmd/web
 RUN go build -o /app/bin/web
 
-WORKDIR /app/cmd/worker
-RUN go build -o /app/bin/worker
-
 FROM alpine:latest
 
 WORKDIR /app
 
 COPY --from=builder /app/bin/web /web
-COPY --from=builder /app/bin/worker /worker
 
 CMD ["/web"]

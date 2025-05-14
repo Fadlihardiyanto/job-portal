@@ -99,9 +99,14 @@ func (c *ResumeUseCase) FindByID(ctx context.Context, request *model.RequestFind
 	}
 
 	resume, err := c.ResumeRepository.FindByID(tx, request.ID)
-	if err != nil {
+	if err != nil && err != gorm.ErrRecordNotFound {
 		c.Log.Errorf("Failed to get resume by ID: %v", err)
 		return nil, fiber.NewError(fiber.StatusInternalServerError, "Failed to get resume by ID")
+	}
+
+	if err == gorm.ErrRecordNotFound {
+		c.Log.Warnf("Resume not found with ID: %s", request.ID)
+		return nil, fiber.NewError(fiber.StatusNotFound, "Resume not found")
 	}
 
 	if err := tx.Commit().Error; err != nil {

@@ -34,17 +34,23 @@ func Bootstrap(config *BootstrapConfig) {
 	authController := http.NewAuthController(config.Viper, config.Log)
 	userController := http.NewUsersController(config.Viper, config.Log)
 	resumeController := http.NewResumeController(config.Viper, config.Log)
+	companyController := http.NewCompanyController(config.Viper, config.Log)
+	jobsController := http.NewJobsController(config.Viper, config.Log)
+	userJobsController := http.NewUserJobsController(config.Viper, config.Log, resumeController)
 
 	// setup middleware
 	authMiddleware := middleware.NewAuth(tokenUseCase)
 
 	routeConfig := route.RouteConfig{
 
-		App:              config.App,
-		AuthController:   authController,
-		AuthMiddleware:   authMiddleware,
-		UserController:   userController,
-		ResumeController: resumeController,
+		App:                config.App,
+		AuthController:     authController,
+		AuthMiddleware:     authMiddleware,
+		UserController:     userController,
+		ResumeController:   resumeController,
+		CompanyController:  companyController,
+		JobsController:     jobsController,
+		UserJobsController: userJobsController,
 	}
 
 	routeConfig.Setup()

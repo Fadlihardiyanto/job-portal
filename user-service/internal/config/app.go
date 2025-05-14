@@ -45,7 +45,7 @@ func Bootstrap(config *BootstrapConfig) {
 	// setup controllers
 	authController := http.NewAuthController(config.Log, userUseCase)
 	userController := http.NewUserController(config.Log, userUseCase)
-	resumeController := http.NewResumeController(config.Log, resumeUseCase, userUseCase)
+	resumeController := http.NewResumeController(config.Log, config.Viper, resumeUseCase, userUseCase)
 
 	routeConfig := route.RouteConfig{
 

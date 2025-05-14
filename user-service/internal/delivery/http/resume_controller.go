@@ -11,17 +11,20 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
 type ResumeController struct {
 	Log           *logrus.Logger
+	Viper         *viper.Viper
 	ResumeUseCase *usecase.ResumeUseCase
 	UsersUseCase  *usecase.UsersUsecase
 }
 
-func NewResumeController(log *logrus.Logger, resumeUseCase *usecase.ResumeUseCase, usersUseCase *usecase.UsersUsecase) *ResumeController {
+func NewResumeController(log *logrus.Logger, viper *viper.Viper, resumeUseCase *usecase.ResumeUseCase, usersUseCase *usecase.UsersUsecase) *ResumeController {
 	return &ResumeController{
 		Log:           log,
+		Viper:         viper,
 		ResumeUseCase: resumeUseCase,
 		UsersUseCase:  usersUseCase,
 	}
@@ -90,7 +93,8 @@ func (c *ResumeController) CreateResume(ctx *fiber.Ctx) error {
 	timestamp := time.Now().Unix()
 	uniqueID := uuid.NewString()[:8]
 	storedFileName := fmt.Sprintf("%d_%s_%s", timestamp, uniqueID, nameFile)
-	savePath := "uploads/resumes/" + storedFileName
+	folderPath := c.Viper.GetString("UPLOAD_DIR")
+	savePath := fmt.Sprintf("%s/%s", folderPath, storedFileName)
 	if err := ctx.SaveFile(fileHeader, savePath); err != nil {
 		c.Log.Warnf("Failed to save file: %+v", err)
 		return common.HandleErrorResponse(ctx, err)

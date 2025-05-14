@@ -8,10 +8,13 @@ import (
 )
 
 type RouteConfig struct {
-	App              *fiber.App
-	AuthController   *http.AuthController
-	UserController   *http.UsersController
-	ResumeController *http.ResumeController
+	App                *fiber.App
+	AuthController     *http.AuthController
+	UserController     *http.UsersController
+	ResumeController   *http.ResumeController
+	CompanyController  *http.CompanyController
+	JobsController     *http.JobsController
+	UserJobsController *http.UserJobsController
 
 	AuthMiddleware fiber.Handler
 }
@@ -48,4 +51,22 @@ func (c *RouteConfig) SetupAuthRoute(group fiber.Router) {
 	resume.Get("/:id", c.ResumeController.FindResumeByID)
 	resume.Get("/user/:id", c.ResumeController.GetResumeByUserID)
 	resume.Post("/", c.ResumeController.CreateResume)
+
+	company := group.Group("/company")
+	company.Get("/", c.CompanyController.GetAllCompany)
+	company.Get("/:id", c.CompanyController.GetCompanyByID)
+	company.Post("/", c.CompanyController.CreateCompany)
+	company.Put("/:id", c.CompanyController.UpdateCompany)
+	company.Put("/:id/access/:user_access", c.CompanyController.UpdateCompanyByIDAndAccess)
+
+	jobs := group.Group("/jobs")
+	jobs.Get("/", c.JobsController.GetAllJobs)
+	jobs.Get("/:id", c.JobsController.GetJobsByID)
+	jobs.Get("/company/:id", c.JobsController.GetJobsByCompanyID)
+	jobs.Post("/", c.JobsController.CreateJob)
+	jobs.Put("/:id", c.JobsController.UpdateJob)
+
+	userJobs := group.Group("/user-jobs")
+	userJobs.Post("/", c.UserJobsController.CreateUserJobs)
+
 }

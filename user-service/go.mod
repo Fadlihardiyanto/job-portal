@@ -2,7 +2,13 @@ module user-service
 
 go 1.23.2
 
-require github.com/sirupsen/logrus v1.9.3
+require (
+	github.com/golang-jwt/jwt/v5 v5.2.2
+	github.com/google/uuid v1.6.0
+	github.com/sirupsen/logrus v1.9.3
+	golang.org/x/crypto v0.33.0
+	gorm.io/gorm v1.25.10
+)
 
 require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
@@ -11,8 +17,6 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
-	github.com/golang-jwt/jwt/v5 v5.2.2 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/pgx/v5 v5.5.5 // indirect
@@ -37,12 +41,10 @@ require (
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
-	golang.org/x/crypto v0.33.0 // indirect
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sync v0.11.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gorm.io/gorm v1.25.10 // indirect
 )
 
 require (
@@ -50,7 +52,6 @@ require (
 	github.com/go-playground/validator/v10 v10.26.0
 	github.com/gofiber/fiber/v2 v2.52.6
 	github.com/spf13/viper v1.20.1
-	github.com/streadway/amqp v1.1.0
 	golang.org/x/sys v0.30.0 // indirect
 	gorm.io/driver/postgres v1.5.11
 )

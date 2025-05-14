@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"io"
 	"io/ioutil"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"strconv"
@@ -132,8 +131,6 @@ func (a *ResumeController) CreateResume(c *fiber.Ctx) error {
 	writer := multipart.NewWriter(reqBody)
 
 	auth := middleware.GetUser(c)
-
-	log.Println("User ID: ", auth.ID)
 
 	_ = writer.WriteField("user_id", strconv.Itoa(auth.ID))
 
